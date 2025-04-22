@@ -4,11 +4,16 @@ import pandas as pd
 import os
 from datetime import datetime
 
+#instantiates Flask API
 app = Flask(__name__)
+#implements CORS
 CORS(app) 
+
+#gets data from csv file
 daily_path = '/home/isabelconaghan/Documents/MPU6050/daily_avg_angles.csv'
 
-#parses time
+#parses time to be in datetime format
+#otherwise assigns it NaT value
 def parse_time(time):
     try:
         return pd.to_datetime(time)
@@ -20,7 +25,7 @@ def get_clean_data(file_path):
     if not os.path.exists(file_path):
         return pd.DataFrame()
 
-    #reads in respective CSV files, declared in methods
+    #reads in csv file
     df = pd.read_csv(file_path)
     
     #gets rid of whitespaces
@@ -34,7 +39,8 @@ def get_clean_data(file_path):
     df.sort_values(by='day', inplace=True)
     return df.tail(10)
 
-
+#API endpoint
+#hosts data from the csv file
 @app.route('/daily')
 def daily_data():
     df = get_clean_data(daily_path)
