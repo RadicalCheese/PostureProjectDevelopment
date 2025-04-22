@@ -44,26 +44,31 @@ def get_clean_data(file_path):
     df.sort_values(by='time', inplace=True)
     return df.tail(10)
 
-@app.route('/mpu6050')
+#API endpoint for live data
+@app.route('/live')
 def live_data():
+    #gets data from the correct csv file
     df = get_clean_data(mpu6050_path)
     
     #checks if data is not being passed in
     if df.empty:
         return jsonify({'error': 'No data available'}), 404
 
-    #converting to json
+    #converts data to json format
     #lists values
     response = {
+        #using datetime format to keep values clean and in the right order
         "timestamps": df['time'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
         "angles": df['overall_angle'].tolist()
     }
     
     #jsonifies data
     return jsonify(response)
-    
+
+#API endpoint for hourly data
 @app.route('/hourly')
 def hourly_data():
+    #cleans data from the hourly average csv file
     df = get_clean_data(hourly_path)
     
     #checks if data is not being passed in
@@ -73,28 +78,32 @@ def hourly_data():
     #converting values to json format
     #listing values
     response = {
+        #using datetime format to keep values clean and in the right order
         "timestamps": df['time'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
         "angles": df['overall_angle'].tolist()
     }
     #jsonifies data
     return jsonify(response)
 
-@app.route('/daily')
-def daily_data():
-    df = get_clean_data(daily_path)
-    #checks if data is not being passed in
-    if df.empty:
-        return jsonify({'error': 'No data available'}), 404
+#when more than two endpoints are declared server becomes overloaded
+#throws 500: Internal Server error
+#@app.route('/daily')
+#def daily_data():
+   # df = get_clean_data(daily_path)
+   # #checks if data is not being passed in
+   # if df.empty:
+     #   return jsonify({'error': 'No data available'}), 404
 
     #converting to json
     #listing values
-    response = {
-        "timestamps": df['time'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
-        "angles": df['overall_angle'].tolist()
-    }
+    #response = {
+       # "timestamps": df['time'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
+       # "angles": df['overall_angle'].tolist()
+   # }
     #jsonifies data
-    return jsonify(response)
+   # return jsonify(response)
 
-
+#host the endpoints on port 2000
+#http://192.18.32.0:2000/
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=2000)
