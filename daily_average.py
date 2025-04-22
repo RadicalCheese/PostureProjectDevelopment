@@ -5,37 +5,40 @@ import os
 
 file_path = '/home/isabelconaghan/Documents/MPU6050/daily_avg_angles.csv'
 
-# Check if file exists
+#check if file exists
 if not os.path.exists(file_path):
     print("CSV file not found.")
     exit()
 
-# Load data
+#load data in from csv file
 df = pd.read_csv(file_path)
 
-# Convert 'day' column to datetime
+#converting 'day' column to datetime
+#avoids NaN and NaT errors
 df['day'] = pd.to_datetime(df['day'], errors='coerce')
 
-# Drop rows with invalid timestamps or angles
+#dropping rows with invalid timestamps or angles
 df.dropna(subset=['day', 'overall_angle'], inplace=True)
+#round figures to 1 decimal place
 df = df.round(1)
 
-# Optional: keep only last 24 entries
+#keeping only last 24 entries to avoid cluttering graphs
 df = df.tail(24)
 
-# Plotting
-fig, ax = plt.subplots()
+#plotting
+figure, axis = plt.subplots()
 ax.plot(df['day'], df['overall_angle'], 'o-', label='Tilt Angle', color='orange')
 
-# Format x-axis for daily ticks
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))  # e.g., Apr 17
-ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+#formatting x-axis for daily ticks
+#identifying days in the time format by using the built-in day locator function
+axis.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))  # e.g., Apr 17
+axis.xaxis.set_major_locator(mdates.DayLocator(interval=1))
 
-# Labels and styling
-ax.set_xlabel("Day")
-ax.set_ylabel("Angle in Degrees")
-ax.set_title("MPU6050 Daily Tilt Angles")
-ax.legend()
+#adding labels and styling details to the graph
+axis.set_xlabel("Day")
+axis.set_ylabel("Angle in Degrees")
+axis.set_title("MPU6050 Daily Tilt Angles")
+axis.legend()
 plt.xticks(rotation=45)
 plt.tight_layout()
 
