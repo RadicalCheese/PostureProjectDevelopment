@@ -15,7 +15,9 @@ mpu6050_path = '/home/isabelconaghan/Documents/MPU6050/get_mpu6050_data.csv'
 hourly_path = '/home/isabelconaghan/Documents/MPU6050/hourly_avg_angles.csv'
 daily_path = '/home/isabelconaghan/Documents/MPU6050/daily_avg_angles.csv'
 
-#parses time
+#parses time to be in datetime format
+#if unable to do so, return in NaT format
+#these NaT values get cleaned later on
 def parse_time(time):
     try:
         return pd.to_datetime(time)
