@@ -4,8 +4,13 @@ import pandas as pd
 import os
 from datetime import datetime
 
+#instantiates the Flask API server
 app = Flask(__name__)
+#implements CORS for data broadcasting
+#data now accessible by mobile application 
 CORS(app) 
+
+#filepaths
 mpu6050_path = '/home/isabelconaghan/Documents/MPU6050/get_mpu6050_data.csv'
 hourly_path = '/home/isabelconaghan/Documents/MPU6050/hourly_avg_angles.csv'
 daily_path = '/home/isabelconaghan/Documents/MPU6050/daily_avg_angles.csv'
