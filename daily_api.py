@@ -4,16 +4,11 @@ import pandas as pd
 import os
 from datetime import datetime
 
-#instantiates Flask API
 app = Flask(__name__)
-#implements CORS
 CORS(app) 
+daily_path = '/home/isabelconaghan/Documents/SenseHAT/daily_avg_angles.csv'
 
-#gets data from csv file
-daily_path = '/home/isabelconaghan/Documents/MPU6050/daily_avg_angles.csv'
-
-#parses time to be in datetime format
-#otherwise assigns it NaT value
+#parses time
 def parse_time(time):
     try:
         return pd.to_datetime(time)
@@ -25,7 +20,7 @@ def get_clean_data(file_path):
     if not os.path.exists(file_path):
         return pd.DataFrame()
 
-    #reads in csv file
+    #reads in respective CSV files, declared in methods
     df = pd.read_csv(file_path)
     
     #gets rid of whitespaces
@@ -33,14 +28,13 @@ def get_clean_data(file_path):
 
 #cleans data again
     df['day'] = pd.to_datetime(df['day'], errors='coerce')
-    df['overall_angle'] = pd.to_numeric(df['overall_angle'], errors='coerce')
-    df.dropna(subset=['day', 'overall_angle'], inplace=True)
+    df['angle'] = pd.to_numeric(df['angle'], errors='coerce')
+    df.dropna(subset=['day', 'angle'], inplace=True)
     df = df.round(1)
     df.sort_values(by='day', inplace=True)
     return df.tail(10)
 
-#API endpoint
-#hosts data from the csv file
+#to get daily data from API
 @app.route('/daily')
 def daily_data():
     df = get_clean_data(daily_path)
@@ -52,11 +46,11 @@ def daily_data():
     #listing values
     response = {
         "timestamps": df['day'].dt.strftime('%Y-%m-%d %H:%M:%S').tolist(),
-        "angles": df['overall_angle'].tolist()
+        "angles": df['angle'].tolist()
     }
     #jsonifies data
     return jsonify(response)
 
-
+#different port to avoid overloading
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+    app.run(host='0.0.0.0', port=7000)
