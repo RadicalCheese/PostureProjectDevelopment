@@ -22,16 +22,17 @@ df.dropna(subset=['day', 'overall_angle'], inplace=True)
 #round figures to 1 decimal place
 df = df.round(1)
 
-#keeping only last 24 entries to avoid cluttering graphs
-df = df.tail(24)
+#keeping only last 7 entries to avoid cluttering graphs
+df = df.tail(7)
 
 #plotting
 figure, axis = plt.subplots()
 ax.plot(df['day'], df['overall_angle'], 'o-', label='Tilt Angle', color='orange')
 
 #formatting x-axis for daily ticks
-#identifying days in the time format by using the built-in day locator function
-axis.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))  # e.g., Apr 17
+#identifying days in the time format by using the 
+#built-in day locator function
+axis.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
 axis.xaxis.set_major_locator(mdates.DayLocator(interval=1))
 
 #adding labels and styling details to the graph
@@ -42,5 +43,5 @@ axis.legend()
 plt.xticks(rotation=45)
 plt.tight_layout()
 
-# Show plot
+#show plot
 plt.show()
