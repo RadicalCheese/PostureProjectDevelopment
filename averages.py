@@ -20,7 +20,8 @@ df.dropna(subset=['time', 'angle'], inplace=True)
 df['hour'] = df['time'].dt.floor('h')
 df['day'] = df['time'].dt.floor('d')
 
-#grouping the data by hours and days, averaging them out, and rounding them to 1 decimal place
+#grouping the data by hours and days, averaging them out
+#and rounding them to 1 decimal place
 hourly_avg = df.groupby('hour')['angle'].mean().reset_index().round(1)
 daily_avg = df.groupby('day')['angle'].mean().reset_index().round(1)
 
