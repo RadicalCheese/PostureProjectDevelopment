@@ -5,33 +5,34 @@ import os
 
 file_path = '/home/isabelconaghan/Documents/SenseHAT/hourly_avg_angles.csv'
 
-# Check if file exists
+#checking if file exists
 if not os.path.exists(file_path):
     print("CSV file not found.")
     exit()
 
-# Load data
+#loading data from csv file
 df = pd.read_csv(file_path)
 
-# Convert 'hour' column to datetime
+#converting 'hour' column to datetime
 df['hour'] = pd.to_datetime(df['hour'], errors='coerce')
 
-# Drop rows with invalid timestamps or angles
+#dropping rows with null or invalid timestamps or angles
 df.dropna(subset=['hour', 'angle'], inplace=True)
 df = df.round(1)
 
-# Optional: keep only last 24 entries
+#keeping only last 24 entries to avoid clutter
 df = df.tail(24)
 
-# Plotting
-figure, axis = plt.subplots()
+#plotting 
+figure, axis = plot.subplots()
 axis.plot(df['hour'], df['angle'], 'o-', label='Tilt Angle', color='orange')
 
-# Time formatting
+#formatting time and hour using Matplotlib's DateFormatter 
+#and HourLocator modules
 axis.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M'))
 axis.xaxis.set_major_locator(mdates.HourLocator(interval=1))
 
-# Labels and styling
+#labels and styling
 axis.set_xlabel("Time")
 axis.set_ylabel("Angle in Degrees")
 axis.set_title("SenseHAT Hourly Tilt Angles")
@@ -39,5 +40,5 @@ axis.legend()
 plot.xticks(rotation=45)
 plot.tight_layout()
 
-# Show plot
+#showing plot
 plot.show()
