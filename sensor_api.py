@@ -17,11 +17,11 @@ def parse_time(time):
         return pd.NaT
 
 def get_clean_data(file_path):
+    #returns empty DataFrame if file not found
     if not os.path.exists(file_path):
-        return pd.DataFrame()  # return empty DataFrame if file not found
+        return pd.DataFrame()  
         
-        
-#cleaning data for json parsing
+    #cleaning data for json parsing
     df = pd.read_csv(file_path)
     
     #renaming 'hour' to 'time' 
