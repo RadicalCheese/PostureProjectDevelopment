@@ -6,7 +6,7 @@ import { LineChart } from 'react-native-chart-kit';
 //inspiration taken from: https://medium.com/@nuburoojkhattak/connecting-your-react-app-to-your-flask-api-a-step-by-step-guide-3daa8ce9d3f2
 
 //url for flask api server
-const API_URL = 'http://192.168.18.32:2000/live	'; 
+const API_URL = 'http://192.168.18.32:2000/live'; 
 const HOURLY_URL = 'http://192.168.18.32:2000/hourly'; 
 const DAILY_URL = 'http://192.168.18.32:3000/daily'; 
 
