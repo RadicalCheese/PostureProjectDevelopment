@@ -14,7 +14,7 @@ figure, axis = plot.subplots()
 line, = axis.plot([], [], 'o-', label='Tilt Angle')
 axis.set_xlabel("Time")
 axis.set_ylabel("Angle in Degrees")
-axis.set_title("Sense HAT Live Angles")
+axis.set_title("SenseHAT Live Angles")
 plot.xticks(rotation=45)
 plot.tight_layout()
 axis.legend()
@@ -35,30 +35,44 @@ def update(frame):
     if not os.path.exists(file_path):
         return
 
-#cleaning data
+    #reads in the csv file
     df = pd.read_csv(file_path)
-    df = df[df['time'].apply(lambda x: isinstance(x, str))]
-    df['time'] = df['time'].apply(parse_time)
+    #removes whitespaces
+    df.columns = df.columns.str.strip()
+
+    #renaming columns if needed
+    if 'angle' in df.columns and 'angle' not in df.columns:
+        df.rename(columns={'angle': 'angle'}, inplace=True)
+    if 'time' in df.columns and 'time' not in df.columns:
+        df.rename(columns={'time': 'time'}, inplace=True)
+
+    #cleans the data by making sure the data is in the right formats
+    #if time or angle data can't be parsed, return as NaN or NaT
+    df['time'] = pd.to_datetime(df['time'], errors='coerce')
+    df['angle'] = pd.to_numeric(df['angle'], errors='coerce')
+    #drops null values
     df.dropna(subset=['time', 'angle'], inplace=True)
+    #rounds values to one decimal place
     df = df.round(1)
-    df.sort_values(by='time', inplace=True)
-
-    #graphs only last 10 readings- saves clutter
+    #only graph last 10 entries to prevent clutter
     df = df.tail(10)
+    
+    #writing to a new csv file
+    cleaned_file_path = '/home/isabelconaghan/Documents/SenseHAT/cleaned_sensehat_data.csv'
+    df.to_csv(cleaned_file_path, index=False)
 
-    #clears and then actively repopulates graph readings
+    #plotting the updated data
     axis.clear()
     axis.plot(df['time'], df['angle'], 'o-', label='Tilt Angle')
     axis.set_xlabel("Time")
     axis.set_ylabel("Angle in Degrees")
-    axis.set_title("Sense HAT Live Angles")
+    axis.set_title("SenseHAT Live Angles")
     axis.legend()
     plot.xticks(rotation=45)
     plot.tight_layout()
     
     
 
-#runs animation
-animation = FuncAnimation(figure, update, interval=refresh_interval)
+#runs animation to update live data
+animation = FuncAnimation(figure, update, interval=refresh_interval, cache_frame_data=False)
 plot.show()
-
