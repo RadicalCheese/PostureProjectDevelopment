@@ -6,7 +6,7 @@ import { LineChart } from 'react-native-chart-kit';
 //inspiration taken from: https://medium.com/@nuburoojkhattak/connecting-your-react-app-to-your-flask-api-a-step-by-step-guide-3daa8ce9d3f2
 
 //url for flask api server
-const API_URL = 'http://192.168.18.32:2000/mpu6050'; 
+const API_URL = 'http://192.168.18.32:2000/live	'; 
 const HOURLY_URL = 'http://192.168.18.32:2000/hourly'; 
 const DAILY_URL = 'http://192.168.18.32:3000/daily'; 
 
@@ -87,6 +87,24 @@ export default function App() {
       setError('Failed to fetch data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  //when not calling to the API
+  //use CSV files for historic data
+  const loadOfflineCSV = async () => {
+    try {
+      const asset = Asset.fromModule(require('./assets/data/daily_avg_angles.csv'));
+      await asset.downloadAsync();
+      const fileUri = asset.localUri || asset.uri;
+      const response = await FileSystem.readAsStringAsync(fileUri);
+      const parsed = Papa.parse(response, { header: true });
+      const cleaned = parsed.data.filter(row => row.date && row.overall_angle);
+      const labels = cleaned.map(row => row.date);
+      const angles = cleaned.map(row => parseFloat(row.overall_angle));
+      setDailyData({ labels, datasets: [{ data: angles }] });
+    } catch (error) {
+      setError('Failed to load offline CSV');
     }
   };
 
